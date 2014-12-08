@@ -44,7 +44,7 @@ class Pupil_Server(Plugin):
         self._bar.add_var("server address",self.address, getter=lambda:self.address, setter=self.set_server)
         self._bar.add_button("close", self.close)
 
-        self.exclude_list = ['ellipse','pos_in_roi','major','minor','axes','angle','center']
+        self.exclude_list = ['ellipse','pos_in_roi','major','minor','axes','angle','center','norm_gaze','norm_pupil']
 
     def set_server(self,new_address):
         try:

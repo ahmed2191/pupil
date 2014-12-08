@@ -32,8 +32,11 @@ class Recorder(Plugin):
         self.frame_count = 0
         self.timestamps = []
         self.gaze_list = []
+        self.selected_frames=[]
         self.eye_tx = eye_tx
         self.start_time = time()
+        self.latestTimeStamp=0
+        self.interest_frames=[]
 
         session = os.path.join(self.g_pool.rec_dir, self.session_str)
         try:
@@ -83,6 +86,7 @@ class Recorder(Plugin):
             help="capture recording control", color=(220, 0, 0), alpha=150,
             text='light', position=atb_pos,refresh=.3, size=(300, 80))
         self._bar.add_var("rec time",create_string_buffer(512), getter=lambda: create_string_buffer(self.get_rec_time_str(),512), readonly=True)
+        self._bar.add_button("record interst",self.record_interst,key="i",help="Record Your interest")
         self._bar.add_button("stop",self.on_stop, key="s", help="stop recording")
         self._bar.define("contained=true")
 
@@ -97,10 +101,14 @@ class Recorder(Plugin):
                 gaze_pt = p['norm_gaze'][0],p['norm_gaze'][1],p['norm_pupil'][0],p['norm_pupil'][1],p['timestamp'],p['confidence']
                 self.gaze_list.append(gaze_pt)
         self.timestamps.append(frame.timestamp)
+        self.latestTimeStamp = frame.timestamp
         self.writer.write(frame.img)
         self.frame_count += 1
 
-
+    def record_interst(self):
+        self.interest_frames.append(self.latestTimeStamp)
+        #print(len(self.interest_frames))
+        
     def stop_and_destruct(self):
         #explicit release of VideoWriter
         self.writer.release()
@@ -114,7 +122,10 @@ class Recorder(Plugin):
 
         gaze_list_path = os.path.join(self.rec_path, "gaze_positions.npy")
         np.save(gaze_list_path,np.asarray(self.gaze_list))
-
+        
+        interstedFrames_list_path = os.path.join(self.rec_path, "interst_frames.npy")
+        np.save(interstedFrames_list_path,np.asarray(self.interest_frames))
+        
         timestamps_path = os.path.join(self.rec_path, "timestamps.npy")
         np.save(timestamps_path,np.array(self.timestamps))
 
