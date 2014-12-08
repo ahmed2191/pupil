@@ -1,0 +1,2 @@
+# Pupil Tools
+This is a small collection of tools that we use with [Pupil](www.github.com/pupil-labs/pupil "pupil repository").  The tools are not part of the main repository, as they are mostly stand-alone convenience scripts.    
