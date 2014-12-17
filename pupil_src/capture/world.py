@@ -360,17 +360,26 @@ def world(g_pool,cap_src,cap_size):
 
         #receive and map pupil positions
         recent_pupil_positions = []
+        pupil_info = []
         while not g_pool.pupil_queue.empty():
             p = g_pool.pupil_queue.get()
             if p['norm_pupil'] is None:
                 p['norm_gaze'] = None
             else:
                 p['norm_gaze'] = g_pool.map_pupil(p['norm_pupil'])
+                print(p)
+                pupil_info.append(p)
+                    #print(p)
+               
+                    #p.record_pupil_info(p['apparent_pupil_size'],p['confidence'],p['norm_pupil'],p['ellipse'])
             recent_pupil_positions.append(p)
 
 
         # allow each Plugin to do its work.
         for p in g_pool.plugins:
+            if isinstance(p,recorder.Recorder):
+                if pupil_info:
+                    p.record_pupil_info(pupil_info)
             p.update(frame,recent_pupil_positions,events)
 
         #check if a plugin need to be destroyed

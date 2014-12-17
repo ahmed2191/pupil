@@ -37,6 +37,7 @@ class Recorder(Plugin):
         self.start_time = time()
         self.latestTimeStamp=0
         self.interest_frames=[]
+        self.pupil_info=[]
 
         session = os.path.join(self.g_pool.rec_dir, self.session_str)
         try:
@@ -104,7 +105,13 @@ class Recorder(Plugin):
         self.latestTimeStamp = frame.timestamp
         self.writer.write(frame.img)
         self.frame_count += 1
-
+    
+    def record_pupil_info(self,info):
+        print(info)
+        self.pupil_info.append(str(self.latestTimeStamp))
+        self.pupil_info.append(info)
+        
+        
     def record_interst(self):
         self.interest_frames.append(self.latestTimeStamp)
         #print(len(self.interest_frames))
@@ -125,6 +132,10 @@ class Recorder(Plugin):
         
         interstedFrames_list_path = os.path.join(self.rec_path, "interst_frames.npy")
         np.save(interstedFrames_list_path,np.asarray(self.interest_frames))
+        
+        pupil_info_list_path = os.path.join(self.rec_path, "pupil_info.npy")
+        np.save(pupil_info_list_path,np.asarray(self.pupil_info))
+        
         
         timestamps_path = os.path.join(self.rec_path, "timestamps.npy")
         np.save(timestamps_path,np.array(self.timestamps))
